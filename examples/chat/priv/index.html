@@ -13,13 +13,13 @@
     jQuery(document).ready(init);
 
     function init() {
-      jQuery("#roomContainer").hide();
-      jQuery("#alertContainer").hide();
-      jQuery("#connectButton").hide();
+      closeElement("#roomContainer");
+      closeElement("#alertContainer");
+      closeElement("#connectButton");
       if (!("WebSocket" in window)) {
         showAlert('<span style="color: red;">Your Web Browser doesn\'t support Websockets!</span>');
       } else {
-        jQuery("#connectButton").show();
+        showElement("#connectButton");
       };
     };
 
@@ -37,14 +37,14 @@
       jQuery("#textToSend").val(username);
       sendMessage();
 
-      jQuery('#roomContainer').show();
-      jQuery('#username-form').hide();
+      showElement('#roomContainer');
+      closeElement('#username-form');
     };
 
     function onClose(evt) {
-      jQuery('#roomContainer').hide();
-      jQuery('#username-form').show();
-      showAlert('<span style="color: red;">Websocket connection has been closed!</span>');
+      closeElement('#roomContainer');
+      showElement('#username-form');
+      showAlert('<span>Websocket connection has been closed!</span>');
     };
 
     function forcedClose() {
@@ -57,7 +57,7 @@
     };
 
     function onError(evt) {
-      showAlert('<span style="color: red;">ERROR: ' + evt.data + '</span>');
+      showAlert('<span>ERROR: ' + evt.data + '</span>');
     };
 
     function sendMessage() {
@@ -66,7 +66,7 @@
         websocket.send(message);
         jQuery("#textToSend").val("");
       } else {
-        showAlert('<span style="color: red;">ERROR: websocket is not ready</span>');
+        showAlert('<span>ERROR: websocket is not ready</span>');
       };
     };
 
@@ -76,14 +76,24 @@
 
     function showAlert(txt) {
       jQuery("#alertContainer").html(
-        `<div class='alert alert-warning alert-dismissible fade show' role='alert'>` +
-          txt +
-          `<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+        `<div class='alert alert-warning alert-dismissible fade show' role='alert' id="warn-alert">` +
+        txt +
+        `<button type='button' class='close' data-dismiss='alert' aria-label='Close' onclick="closeElement('#warn-alert');">
             <span aria-hidden='true'>&times;</span>
           </button>
         </div>`
       );
-      jQuery("#alertContainer").show();
+      showElement("#alertContainer");
+    }
+    function closeElement(obj_name) {
+      $(obj_name).fadeTo(0, 500).slideUp(500, function () {
+        $(obj_name).slideUp(500);
+      });
+    }
+    function showElement(obj_name) {
+      $(obj_name).fadeTo(0, 500).slideDown(500, function () {
+        $(obj_name).slideDown(500);
+      });
     }
   </script>
   <style>
@@ -107,7 +117,7 @@
     <div id="alertContainer"></div>
 
     <form id="username-form" onsubmit="connect(); return false;">
-      Insert your username:<br>
+      <small>Insert your username:</small>
       <input id="username" type="text" placeholder="username">
       <button type="submit" class="btn btn-primary">
         Join the Chat Room
@@ -128,15 +138,29 @@
         </span>
       </form>
       <form onsubmit="forcedClose(); return false;">
-          <span>
-              <button type="submit" class="btn btn-danger">
-                  Disconnect
-                </button>
-          </span>
-        </form>
+        <span>
+          <button type="submit" class="btn btn-danger">
+            Disconnect
+          </button>
+        </span>
+      </form>
 
     </div>
   </div>
+
+  <footer class="page-footer font-small blue pt-4">
+    <div class="container text-center text-md-left">
+      <div class="row">
+        <div class="col-md-6 mt-md-0 mt-3">
+          <p>Tutorial ErlBus Pemrograman Fungsional 2018</p>
+        </div>
+        <hr class="clearfix w-100 d-md-none pb-3">
+      </div>
+    </div>
+    <div class="footer-copyright text-center py-3">© 2018 Copyright:
+      <a>Aldi Hilman Ramadhani (1606895184)</a>
+    </div>
+  </footer>
 </body>
 
 </html>
