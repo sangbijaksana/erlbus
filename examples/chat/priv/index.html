@@ -33,11 +33,17 @@
     };
 
     function onOpen(evt) {
+      username = jQuery("#username").val();
+      jQuery("#textToSend").val(username);
+      sendMessage();
+
       jQuery('#roomContainer').fadeIn('slow');
+      jQuery('#username-form').fadeOut('slow');
     };
 
     function onClose(evt) {
       jQuery('#roomContainer').fadeOut('slow');
+      jQuery('#username-form').fadeIn('slow');
       showAlert('<span style="color: red;">Websocket connection has been closed!</span>');
     };
 
@@ -51,10 +57,8 @@
 
     function sendMessage() {
       if (websocket.readyState == websocket.OPEN) {
-        var username = jQuery("#usernameToSend").val();
         var message = jQuery("#textToSend").val();
-        websocket.send(username+" : "+message);
-        jQuery("#usernameToSend").val("");
+        websocket.send(message);
         jQuery("#textToSend").val("");
       } else {
         showAlert('<span style="color: red;">ERROR: websocket is not ready</span>');
@@ -62,7 +66,7 @@
     };
 
     function showMessage(data) {
-      jQuery('#chatContainer').append('<div>' + data.sender + ' -> ' + data.msg + '</div>');
+      jQuery('#chatContainer').append('<div>' + data.sender + ' [IP: ' + data.host + '] -> ' + data.msg + '</div>');
     };
 
     function showAlert(txt) {
@@ -82,14 +86,17 @@
 <body>
   <div class="container">
     <div id="alertContainer"></div>
-    <input id="connectButton" type="button" value="Join the Chat Room!" onclick="connect();" />
+
+    <form id="username-form" onsubmit="connect(); return false;">
+      Username :<br>
+      <input id="username" type="text" placeholder="username">
+      <input type="submit" value="Join the Chat Room">
+    </form>
 
     <div id="roomContainer">
       <div id="chatContainer"></div>
       <form onsubmit="sendMessage(); return false;">
         <span>
-          <small>Username:</small>
-          <input id="usernameToSend" type="text" />
           <small>Message:</small>
           <input id="textToSend" type="text" />
         </span>
