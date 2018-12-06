@@ -37,15 +37,20 @@
       jQuery("#textToSend").val(username);
       sendMessage();
 
-      jQuery('#roomContainer').fadeIn('slow');
-      jQuery('#username-form').fadeOut('slow');
+      jQuery('#roomContainer').show();
+      jQuery('#username-form').hide();
     };
 
     function onClose(evt) {
-      jQuery('#roomContainer').fadeOut('slow');
-      jQuery('#username-form').fadeIn('slow');
+      jQuery('#roomContainer').hide();
+      jQuery('#username-form').show();
       showAlert('<span style="color: red;">Websocket connection has been closed!</span>');
     };
+
+    function forcedClose() {
+      websocket.close();
+      onClose('any');
+    }
 
     function onMessage(evt) {
       showMessage(jQuery.parseJSON(evt.data));
@@ -70,40 +75,66 @@
     };
 
     function showAlert(txt) {
-      jQuery("#alertContainer").html(txt);
+      jQuery("#alertContainer").html(
+        `<div class='alert alert-warning alert-dismissible fade show' role='alert'>` +
+          txt +
+          `<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+        </div>`
+      );
       jQuery("#alertContainer").show();
     }
   </script>
   <style>
     #chatContainer {
-          background-color:lightgray;
-          min-width: 300px;
-          min-height: 200px;
-        }
-      </style>
+      background-color:lightgray;
+      min-width: 300px;
+      min-height: 200px;
+    }
+    .container {
+      font-family: "Trebuchet MS", Helvetica, sans-serif;
+    }
+    #msg-form {
+      padding-top: 5%;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
+    <h1 class="jumbotron lead"><strong>Chat Room</strong></h1>
     <div id="alertContainer"></div>
 
     <form id="username-form" onsubmit="connect(); return false;">
-      Username :<br>
+      Insert your username:<br>
       <input id="username" type="text" placeholder="username">
-      <input type="submit" value="Join the Chat Room">
+      <button type="submit" class="btn btn-primary">
+        Join the Chat Room
+      </button>
     </form>
 
     <div id="roomContainer">
       <div id="chatContainer"></div>
-      <form onsubmit="sendMessage(); return false;">
+      <form onsubmit="sendMessage(); return false;" id="msg-form">
         <span>
           <small>Message:</small>
           <input id="textToSend" type="text" />
         </span>
         <span>
-          <input type="submit" value="send" />
+          <button type="submit" class="btn btn-primary">
+            Send Message
+          </button>
         </span>
       </form>
+      <form onsubmit="forcedClose(); return false;">
+          <span>
+              <button type="submit" class="btn btn-danger">
+                  Disconnect
+                </button>
+          </span>
+        </form>
+
     </div>
   </div>
 </body>
